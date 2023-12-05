@@ -1,3 +1,1 @@
-# these dirs and files are not tracked by Git
-
-www/patches/
+.DS_Store

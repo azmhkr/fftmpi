@@ -163,7 +163,7 @@ do k = klo,khi
   enddo
 enddo
 
-call MPI_Allreduce(mydiff,alldiff,1,mpi_double,mpi_max,world,ierr)  
+call MPI_Allreduce(mydiff,alldiff,1,mpi_double,mpi_max,world,ierr)
 if (me == 0) print *,"Max difference in initial/final values =",alldiff
 
 ! clean up

@@ -17,10 +17,10 @@
 ! see test3d.cpp for command-line args
 
 ! ---------------------------------------------------------------------
-! common data
+! common data_3d
 ! ---------------------------------------------------------------------
 
-module data
+module data_3d
 use iso_c_binding
 implicit none
 
@@ -82,7 +82,7 @@ real(8), allocatable, target :: work(:)
 
 character (len=256) :: syntax
 
-end module data
+end module data_3d
 
 ! ---------------------------------------------------------------------
 ! main program
@@ -90,7 +90,7 @@ end module data
 
 program test3d_f90
 
-use data
+use data_3d
 use iso_c_binding
 use fft3d_wrap
 
@@ -183,7 +183,7 @@ if (oflag /= 0) then
       call output(1,"final grid")
    endif
 endif
-  
+
 call timing()
 call deallocate_mine()
 call fft3d_destroy(fft)
@@ -198,7 +198,7 @@ end program test3d_f90
 ! ---------------------------------------------------------------------
 
 subroutine options()
-use data
+use data_3d
 implicit none
 integer iarg,narg
 character(len=32) :: arg
@@ -257,9 +257,9 @@ do while (iarg <= narg)
     if (iarg+4 > narg+1) call error_all(syntax)
     call get_command_argument(iarg+1,arg)
     read (arg,'(i10)') outpx
-    call get_command_argument(iarg+2,arg) 
+    call get_command_argument(iarg+2,arg)
     read (arg,'(i10)') outpy
-    call get_command_argument(iarg+3,arg) 
+    call get_command_argument(iarg+3,arg)
     read (arg,'(i10)') outpz
     iarg = iarg + 4
   else if (arg == '-n') then
@@ -307,7 +307,7 @@ do while (iarg <= narg)
       cflag = all2all
     else if (arg == "combo") then
       cflag = combo
-    else 
+    else
       call error_all(syntax)
     endif
     iarg = iarg + 2
@@ -318,7 +318,7 @@ do while (iarg <= narg)
       eflag = pencil
     else if (arg == "brick") then
       eflag = brick
-    else 
+    else
       call error_all(syntax)
     endif
     iarg = iarg + 2
@@ -327,11 +327,11 @@ do while (iarg <= narg)
     call get_command_argument(iarg+1,arg)
     if (arg == "array") then
       pflag = array
-    else if (arg == "ptr") then 
+    else if (arg == "ptr") then
       pflag = pointer
     else if (arg == "memcpy") then
       pflag = memcpy
-    else 
+    else
       call error_all(syntax)
     endif
     iarg = iarg + 2
@@ -398,7 +398,7 @@ end subroutine options
 ! ---------------------------------------------------------------------
 
 subroutine proc_setup(flag)
-use data
+use data_3d
 implicit none
 integer flag
 
@@ -418,7 +418,7 @@ end subroutine proc_setup
 ! ---------------------------------------------------------------------
 
 subroutine proc3d(px,py,pz)
-use data
+use data_3d
 implicit none
 integer px,py,pz
 integer ipx,ipy,ipz,nremain
@@ -428,12 +428,12 @@ real*8 xprd,yprd,zprd,bestsurf
 xprd = nx
 yprd = ny
 zprd = nz
-  
+
 bestsurf = 2.0 * (xprd*yprd + yprd*zprd + zprd*xprd)
-  
+
 ! loop thru all possible factorizations of nprocs
 ! surf = surface area of a proc sub-domain
-  
+
 ipx = 1
 do while (ipx <= nprocs)
   if (mod(nprocs,ipx) == 0) then
@@ -458,7 +458,7 @@ do while (ipx <= nprocs)
   endif
   ipx = ipx + 1
 enddo
-  
+
 if (px*py*pz /= nprocs) &
         call error_all("computed proc grid does not match nprocs")
 
@@ -467,7 +467,7 @@ end subroutine proc3d
 ! ---------------------------------------------------------------------
 
 subroutine proc2d(px,py,pz)
-use data
+use data_3d
 implicit none
 integer px,py,pz
 integer ipx,ipy
@@ -475,12 +475,12 @@ real*8 boxx,boxy,surf,xprd,yprd,bestsurf
 
 xprd = nx
 yprd = ny
-  
+
 bestsurf = 2.0 * (xprd+yprd)
-  
+
 ! loop thru all possible factorizations of nprocs
 ! surf = surface area of a proc sub-domain
-  
+
 ipx = 1
 do while (ipx <= nprocs)
   if (mod(nprocs,ipx) == 0) then
@@ -496,7 +496,7 @@ do while (ipx <= nprocs)
   endif
   ipx = ipx + 1
 enddo
-  
+
 pz = 1
 if (px*py*pz /= nprocs) &
         call error_all("computed proc grid does not match nprocs")
@@ -510,7 +510,7 @@ end subroutine proc2d
 ! ---------------------------------------------------------------------
 
 subroutine grid_setup()
-use data
+use data_3d
 implicit none
 integer ipx,ipy,ipz
 
@@ -559,7 +559,7 @@ end subroutine grid_setup
 ! ---------------------------------------------------------------------
 
 subroutine plan()
-use data
+use data_3d
 use fft3d_wrap
 implicit none
 integer permute,sendsize,recvsize,flag,ierr
@@ -574,7 +574,7 @@ call fft3d_set(fft,"pack",pflag)
 
 if (mode == 0 .or. mode == 2) then
   permute = 0
-else 
+else
   permute = 2
 endif
 
@@ -620,7 +620,7 @@ end subroutine plan
 ! ---------------------------------------------------------------------
 
 subroutine allocate_mine()
-use data
+use data_3d
 implicit none
 
 allocate(work(2*fftsize))
@@ -633,7 +633,7 @@ end subroutine allocate_mine
 ! ---------------------------------------------------------------------
 
 subroutine initialize()
-use data
+use data_3d
 implicit none
 integer m
 integer ilocal,jlocal,klocal,iglobal,jglobal,kglobal
@@ -658,7 +658,7 @@ else if (iflag == step) then
     kglobal = inzlo + klocal
     if (iglobal < nx/2 .and. jglobal < ny/2 .and. kglobal < nz/2) then
       work(2*m) = 1.0
-    else 
+    else
       work(2*m) = 0.0
     endif
     work(2*m+1) = 0.0
@@ -694,7 +694,7 @@ end subroutine initialize
 ! ---------------------------------------------------------------------
 
 subroutine output(flag, str)
-use data
+use data_3d
 implicit none
 integer flag
 character (len=*) :: str
@@ -711,7 +711,7 @@ do iproc = 0,nprocs-1
   if (flag == 0) then
     nxlocal = inxhi - inxlo + 1
     nylocal = inyhi - inylo + 1
-    
+
     do m = 0,nfft_in-1
       ilocal = mod(m,nxlocal)
       jlocal = mod((m/nxlocal),nylocal)
@@ -748,7 +748,7 @@ end subroutine output
 ! ---------------------------------------------------------------------
 
 subroutine validate()
-use data
+use data_3d
 implicit none
 integer ilocal,jlocal,klocal,iglobal,jglobal,kglobal
 integer nxlocal,nylocal
@@ -818,11 +818,11 @@ call MPI_Allreduce(epsilon,epsmax,1,MPI_DOUBLE,MPI_MAX,world,ierr)
 end subroutine validate
 
 ! ---------------------------------------------------------------------
-! output timing data
+! output timing data_3d
 ! ---------------------------------------------------------------------
 
 subroutine timing()
-use data
+use data_3d
 use iso_c_binding
 use fft3d_wrap
 implicit none
@@ -976,7 +976,7 @@ endif
 
 if (mode < 2) then
   nfft = 2*nloop
-else 
+else
   nfft = nloop
 endif
 
@@ -1067,11 +1067,11 @@ if (me == 0) then
           1.0*gridbytes / 1024/1024,"MBytes"
   print *,"Memory usage (per-proc) by fftMPI =", &
           1.0*fft3d_get_int64(fft,"memusage"//c_null_char) / 1024/1024,"MBytes"
-  
+
   if (vflag /= 0) print *,"Max error =",epsmax
   if (tuneflag /= 0) then
     print *,"Initialize grid =",timeinit-timesetup,"secs"
-  else 
+  else
     print *,"Initialize grid =",timeinit-timetune,"secs"
   endif
   print *,"FFT setup =",timesetup,"secs"
@@ -1105,7 +1105,7 @@ end subroutine timing
 ! ---------------------------------------------------------------------
 
 subroutine deallocate_mine()
-use data
+use data_3d
 implicit none
 
 deallocate(work)
@@ -1124,7 +1124,7 @@ end subroutine deallocate_mine
 ! ---------------------------------------------------------------------
 
 subroutine error_all(str)
-use data
+use data_3d
 implicit none
 character (len=*) :: str
 integer ierr
@@ -1142,7 +1142,7 @@ end subroutine error_all
 ! ----------------------------------------------------------------------
 
 function random()
-use data
+use data_3d
 implicit none
 integer k
 real*8 ans,random

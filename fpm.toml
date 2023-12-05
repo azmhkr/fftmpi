@@ -1,0 +1,15 @@
+name = "fftmpi"
+version = "0.1.0"
+
+[build]
+auto-tests = true
+module-naming = false
+external-modules = ["mpi"]
+
+[install]
+library = true
+
+[fortran]
+implicit-typing = false
+implicit-external = false
+source-form = "free"
