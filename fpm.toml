@@ -8,7 +8,8 @@ external-modules = ["mpi", "fftw3"]
 
 [preprocess]
 [preprocess.cpp]
-macros = ["FFT_FFTW3"]
+macros = ["FFT_KISS"]
+# macros = ["FFT_FFTW3"]
 
 [install]
 library = true

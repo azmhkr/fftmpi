@@ -106,6 +106,7 @@ klo = 1.0*ipslow*nslow/npslow + 1
 khi = 1.0*(ipslow+1)*nslow/npslow
 
 ! setup fft, could replace with tune()
+print *, ilo, ihi, jlo, jhi, klo, khi
 
 call fft3d_setup(fft,nfast,nmid,nslow, &
         ilo,ihi,jlo,jhi,klo,khi,ilo,ihi,jlo,jhi,klo,khi, &
